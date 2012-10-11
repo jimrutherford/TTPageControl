@@ -15,7 +15,6 @@
 		37F3EF1C1625E58200530A43 /* TTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F3EF1B1625E58200530A43 /* TTAppDelegate.m */; };
 		37F3EF1E1625E58200530A43 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F3EF1D1625E58200530A43 /* Default.png */; };
 		37F3EF201625E58200530A43 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F3EF1F1625E58200530A43 /* Default@2x.png */; };
-		37F3EF221625E58200530A43 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 37F3EF211625E58200530A43 /* Default-568h@2x.png */; };
 		37F3EF251625E58200530A43 /* TTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F3EF241625E58200530A43 /* TTViewController.m */; };
 		37F3EF281625E58200530A43 /* TTViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 37F3EF261625E58200530A43 /* TTViewController.xib */; };
 		37F3EF331625E6F500530A43 /* TTPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 37F3EF321625E6F500530A43 /* TTPageControl.m */; };
@@ -260,7 +259,6 @@
 				37F3EF161625E58200530A43 /* InfoPlist.strings in Resources */,
 				37F3EF1E1625E58200530A43 /* Default.png in Resources */,
 				37F3EF201625E58200530A43 /* Default@2x.png in Resources */,
-				37F3EF221625E58200530A43 /* Default-568h@2x.png in Resources */,
 				37F3EF281625E58200530A43 /* TTViewController.xib in Resources */,
 				37F3EF4F162648E100530A43 /* bg_1.png in Resources */,
 				37F3EF50162648E100530A43 /* bg_1@2x.png in Resources */,

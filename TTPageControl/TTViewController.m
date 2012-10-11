@@ -15,34 +15,33 @@
 
 @implementation TTViewController
 
-@synthesize scrollView ;
+@synthesize scrollView;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	int numberOfPages = 10 ;
+	int numberOfPages = 10;
 	
 	// define the scroll view content size and enable paging
-	[scrollView setPagingEnabled: YES] ;
-	[scrollView setContentSize: CGSizeMake(scrollView.bounds.size.width * numberOfPages, scrollView.bounds.size.height)] ;
+	[scrollView setPagingEnabled: YES];
+	[scrollView setContentSize: CGSizeMake(scrollView.bounds.size.width * numberOfPages, scrollView.bounds.size.height)];
 
     NSArray *indicators = [[NSArray alloc] initWithObjects:@"search", @"location", [NSNull null], @"home", nil];
     
 	// programmatically add the page control
-	pageControl = [[TTPageControl alloc] init] ;
-	[pageControl setCenter: CGPointMake(self.view.center.x, self.view.bounds.size.height-30.0f)] ;
-	[pageControl setNumberOfPages: numberOfPages] ;
-	[pageControl setCurrentPage: 0] ;
-	[pageControl addTarget: self action: @selector(pageControlClicked:) forControlEvents: UIControlEventValueChanged] ;
-	[pageControl setDefersCurrentPageDisplay: YES] ;
-	[pageControl setIndicatorWidth: 12.0f] ;
-    [pageControl setIndicatorHeight: 12.0f] ;
-	[pageControl setIndicatorSpace: 15.0f] ;
+	pageControl = [[TTPageControl alloc] init];
+	[pageControl setCenter: CGPointMake(self.view.center.x, self.view.bounds.size.height-30.0f)];
+	[pageControl setNumberOfPages: numberOfPages];
+	[pageControl addTarget: self action: @selector(pageControlClicked:) forControlEvents: UIControlEventValueChanged];
+	[pageControl setDefersCurrentPageDisplay: YES];
+	[pageControl setIndicatorWidth: 12.0f];
+    [pageControl setIndicatorHeight: 12.0f];
+	[pageControl setIndicatorSpace: 15.0f];
     [pageControl setIndicatorSelectedColor:[UIColor yellowColor]];
     [pageControl setIndicatorColor: [UIColor redColor]];
     [pageControl setIndicatorImages:indicators];
     [pageControl setDefaultIndicator:@"dot2"];
-	[self.view addSubview: pageControl] ;
+	[self.view addSubview: pageControl];
 	
 	UIImageView *page;
 	CGRect pageFrame ;
@@ -82,6 +81,10 @@
         // add it to the scroll view
 		[scrollView addSubview: page] ;
 	}
+    
+    int currentPage = 1;
+    [pageControl setCurrentPage:currentPage];
+    [scrollView setContentOffset:CGPointMake(currentPage * scrollView.bounds.size.width, 0) animated:NO];
 }
 
 #pragma mark -
@@ -89,10 +92,10 @@
 
 - (void)pageControlClicked:(id)sender
 {
-	TTPageControl *pc = (TTPageControl *)sender ;
+	TTPageControl *pc = (TTPageControl *)sender;
 	
 	// we need to scroll to the new index
-	[scrollView setContentOffset: CGPointMake(scrollView.bounds.size.width * pc.currentPage, scrollView.contentOffset.y) animated: YES] ;
+	[scrollView setContentOffset: CGPointMake(scrollView.bounds.size.width * pc.currentPage, scrollView.contentOffset.y) animated: YES];
 }
 
 
@@ -102,23 +105,23 @@
 - (void)scrollViewDidScroll:(UIScrollView *)aScrollView
 {
 	CGFloat pageWidth = scrollView.bounds.size.width ;
-    float fractionalPage = scrollView.contentOffset.x / pageWidth ;
-	NSInteger nearestNumber = lround(fractionalPage) ;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
+	NSInteger nearestNumber = lround(fractionalPage);
 	
 	if (pageControl.currentPage != nearestNumber)
 	{
-		pageControl.currentPage = nearestNumber ;
+		pageControl.currentPage = nearestNumber;
 		
 		// if we are dragging, we want to update the page control directly during the drag
 		if (scrollView.dragging)
-			[pageControl updateCurrentPageDisplay] ;
+			[pageControl updateCurrentPageDisplay];
 	}
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)aScrollView
 {
 	// if we are animating (triggered by clicking on the page control), we update the page control
-	[pageControl updateCurrentPageDisplay] ;
+	[pageControl updateCurrentPageDisplay];
 }
 
 

@@ -31,6 +31,9 @@
 @synthesize indicatorColor;
 @synthesize indicatorSelectedColor;
 
+NSMutableArray *imageViews;
+NSMutableArray *imageSelectedViews;
+
 #pragma mark -
 #pragma mark Initializers
 
@@ -55,7 +58,7 @@
 
 - (void)drawRect:(CGRect)rect
 {
-	
+    
     for (UIView *view in [self subviews]) {
         [view removeFromSuperview];
     }
@@ -64,8 +67,7 @@
 	CGFloat width = (indicatorWidth > 0) ? indicatorWidth : kItemWidth ;
     CGFloat height = (indicatorHeight > 0) ? indicatorHeight : kItemHeight ;
 	CGFloat space = (indicatorSpace > 0) ? indicatorSpace : kItemSpace ;
-    UIColor * color = (indicatorColor != nil) ? indicatorColor : kDefaultIndicatorColor;
-    UIColor * selectedColor = (indicatorSelectedColor != nil) ? indicatorSelectedColor : kDefaultIndicatorSelectedColor;
+    
     
 	// geometry
 	CGRect currentBounds = self.bounds ;
@@ -77,6 +79,37 @@
 	for (int i = 0 ; i < numberOfPages ; i++)
 	{
 		CGRect indicatorRect = CGRectMake(x, y, width, height) ;
+        
+        UIImageView *indicatorView;
+        
+        if (currentPage == i)
+        {
+            indicatorView = [imageSelectedViews objectAtIndex:i];
+        }
+        else
+        {
+            indicatorView = [imageViews objectAtIndex:i];
+        }
+        
+        indicatorView.frame = indicatorRect;
+        
+        [self addSubview:indicatorView];
+        
+		x += width + space ;
+	}
+}
+
+- (void) initImageViews
+{
+    imageViews = [[NSMutableArray alloc] init];
+    imageSelectedViews = [[NSMutableArray alloc] init];
+    
+    UIColor * color = (indicatorColor != nil) ? indicatorColor : kDefaultIndicatorColor;
+    UIColor * selectedColor = (indicatorSelectedColor != nil) ? indicatorSelectedColor : kDefaultIndicatorSelectedColor;
+    
+    // actually draw the indicators
+	for (int i = 0 ; i < numberOfPages ; i++)
+	{
         
         // start our indicator image with the default image name
         NSString *indicatorImage = (defaultIndicator.length > 0) ? defaultIndicator : kDefaultIndicator;
@@ -95,58 +128,41 @@
         }
         
         UIImage *indicator = [UIImage imageNamed:[NSString stringWithFormat:@"%@@2x.png", indicatorImage]];
-        UIColor *tintColor;
         
-        // determine the icon color based on whether the page is selected or not
-		if (i == currentPage)
-		{
-			tintColor = selectedColor;
-		}
-		else
-		{
-            tintColor = color;
-        }
-		
+        UIImageView *indicatorView = [[UIImageView alloc] initWithImage:[self tintImage:indicator withColor:color]];
+        UIImageView *indicatorSelectedView = [[UIImageView alloc] initWithImage:[self tintImage:indicator withColor:selectedColor]];
         
-        // lets tint the icon - assumes your icons are black
-        UIGraphicsBeginImageContext(indicator.size);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        
-        CGContextTranslateCTM(context, 0, indicator.size.height);
-        CGContextScaleCTM(context, 1.0, -1.0);
-        
-        CGRect rect = CGRectMake(0, 0, indicator.size.width, indicator.size.height);
-        
-        
-        // draw alpha-mask
-        CGContextSetBlendMode(context, kCGBlendModeNormal);
-        CGContextDrawImage(context, rect, indicator.CGImage);
-        
-        // draw tint color, preserving alpha values of original image
-        CGContextSetBlendMode(context, kCGBlendModeSourceIn);
-        [tintColor setFill];
-        CGContextFillRect(context, rect);
-        
-        
-        
-        
-        
-        
-        
-        
-        UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        UIImageView *indicatorView;
-        indicatorView = [[UIImageView alloc] initWithImage:coloredImage];
-        indicatorView.frame = indicatorRect;
-        
-        [self addSubview:indicatorView];
-        
-		x += width + space ;
+        [imageViews addObject:indicatorView];
+        [imageSelectedViews addObject:indicatorSelectedView];
 	}
 }
 
+-(UIImage*) tintImage:(UIImage*)indicator withColor:(UIColor*)tintColor
+{
+    // lets tint the icon - assumes your icons are black
+    UIGraphicsBeginImageContext(indicator.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextTranslateCTM(context, 0, indicator.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    
+    CGRect rect = CGRectMake(0, 0, indicator.size.width, indicator.size.height);
+    
+    // draw alpha-mask
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
+    CGContextDrawImage(context, rect, indicator.CGImage);
+    
+    // draw tint color, preserving alpha values of original image
+    CGContextSetBlendMode(context, kCGBlendModeSourceIn);
+    [tintColor setFill];
+    CGContextFillRect(context, rect);
+    
+    UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return coloredImage;
+    
+}
 
 #pragma mark -
 #pragma mark Accessors
@@ -177,6 +193,7 @@
 	self.bounds = self.bounds ;
 	
 	// we need to redraw
+    [self initImageViews];
 	[self setNeedsDisplay] ;
 	
 	// depending on the user preferences, we hide the page control with a single element
@@ -233,7 +250,7 @@
 - (void)setIndicatorImages:(NSArray *)aIndicatorImages
 {
 	indicatorImages = aIndicatorImages ;
-	
+	[self initImageViews];
 	[self setNeedsDisplay] ;
 }
 
@@ -247,14 +264,14 @@
 - (void)setIndicatorColor:(UIColor *)aIndicatorColor
 {
 	indicatorColor = aIndicatorColor ;
-	
+	[self initImageViews];
 	[self setNeedsDisplay] ;
 }
 
 - (void)setIndicatorSelectedColor:(UIColor *)aIndicatorSelectedColor
 {
 	indicatorSelectedColor = aIndicatorSelectedColor ;
-	
+	[self initImageViews];
 	[self setNeedsDisplay] ;
 }
 

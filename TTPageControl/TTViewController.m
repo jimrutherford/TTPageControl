@@ -35,8 +35,8 @@
 	[pageControl setCurrentPage: 0] ;
 	[pageControl addTarget: self action: @selector(pageControlClicked:) forControlEvents: UIControlEventValueChanged] ;
 	[pageControl setDefersCurrentPageDisplay: YES] ;
-	[pageControl setIndicatorWidth: 14.0f] ;
-    [pageControl setIndicatorHeight: 14.0f] ;
+	[pageControl setIndicatorWidth: 12.0f] ;
+    [pageControl setIndicatorHeight: 12.0f] ;
 	[pageControl setIndicatorSpace: 15.0f] ;
     [pageControl setIndicatorImages:indicators];
     //[pageControl setDefaultIndicator:@"dot"];

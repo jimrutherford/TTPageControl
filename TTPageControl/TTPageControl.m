@@ -13,6 +13,8 @@
 #define kItemHeight     4.0f
 #define kItemSpace		12.0f
 #define kDefaultIndicator @"dot"
+#define kDefaultIndicatorColor [UIColor blackColor]
+#define kDefaultIndicatorSelectedColor [UIColor colorWithRed:114/255.0f green:198/255.0f blue:255/255.0f alpha:1.0f]
 
 @implementation TTPageControl
 
@@ -26,9 +28,11 @@
 @synthesize indicatorSpace;
 @synthesize indicatorImages;
 @synthesize defaultIndicator;
+@synthesize indicatorColor;
+@synthesize indicatorSelectedColor;
 
 #pragma mark -
-#pragma mark Initializers - dealloc
+#pragma mark Initializers
 
 - (id)init
 {
@@ -56,26 +60,28 @@
         [view removeFromSuperview];
     }
     
-    
 	// get the indicator metrics if it has been set or use the default one
 	CGFloat width = (indicatorWidth > 0) ? indicatorWidth : kItemWidth ;
     CGFloat height = (indicatorHeight > 0) ? indicatorHeight : kItemHeight ;
 	CGFloat space = (indicatorSpace > 0) ? indicatorSpace : kItemSpace ;
-
+    UIColor * color = (indicatorColor != nil) ? indicatorColor : kDefaultIndicatorColor;
+    UIColor * selectedColor = (indicatorSelectedColor != nil) ? indicatorSelectedColor : kDefaultIndicatorSelectedColor;
+    
 	// geometry
 	CGRect currentBounds = self.bounds ;
-	CGFloat dotsWidth = self.numberOfPages * width + MAX(0, self.numberOfPages - 1) * space ;
-	CGFloat x = CGRectGetMidX(currentBounds) - dotsWidth / 2 ;
+	CGFloat totalWidth = self.numberOfPages * width + MAX(0, self.numberOfPages - 1) * space ;
+	CGFloat x = CGRectGetMidX(currentBounds) - totalWidth / 2 ;
 	CGFloat y = CGRectGetMidY(currentBounds) - height / 2 ;
 	
-	// actually draw the dots
+	// actually draw the indicators
 	for (int i = 0 ; i < numberOfPages ; i++)
 	{
 		CGRect indicatorRect = CGRectMake(x, y, width, height) ;
-		UIImageView *indicator;
         
+        // start our indicator image with the default image name
         NSString *indicatorImage = (defaultIndicator.length > 0) ? defaultIndicator : kDefaultIndicator;
         
+        // look are our indicatorImages array and see if we need a custom icon at this spot
         if (indicatorImages != nil)
         {
             if (i < [indicatorImages count])
@@ -87,24 +93,58 @@
                 }
             }
         }
-    
         
+        UIImage *indicator = [UIImage imageNamed:[NSString stringWithFormat:@"%@@2x.png", indicatorImage]];
+        UIColor *tintColor;
+        
+        // determine the icon color based on whether the page is selected or not
 		if (i == currentPage)
 		{
-			indicator = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_selected.png", indicatorImage]]];
+			tintColor = selectedColor;
 		}
 		else
 		{
-            indicator = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@.png", indicatorImage]]];
+            tintColor = color;
         }
 		
-        indicator.frame = indicatorRect;
         
-        [self addSubview:indicator];
+        // lets tint the icon - assumes your icons are black
+        UIGraphicsBeginImageContext(indicator.size);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        
+        CGContextTranslateCTM(context, 0, indicator.size.height);
+        CGContextScaleCTM(context, 1.0, -1.0);
+        
+        CGRect rect = CGRectMake(0, 0, indicator.size.width, indicator.size.height);
+        
+        
+        // draw alpha-mask
+        CGContextSetBlendMode(context, kCGBlendModeNormal);
+        CGContextDrawImage(context, rect, indicator.CGImage);
+        
+        // draw tint color, preserving alpha values of original image
+        CGContextSetBlendMode(context, kCGBlendModeSourceIn);
+        [tintColor setFill];
+        CGContextFillRect(context, rect);
+        
+        
+        
+        
+        
+        
+        
+        
+        UIImage *coloredImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        UIImageView *indicatorView;
+        indicatorView = [[UIImageView alloc] initWithImage:coloredImage];
+        indicatorView.frame = indicatorRect;
+        
+        [self addSubview:indicatorView];
         
 		x += width + space ;
 	}
-    
 }
 
 
@@ -200,6 +240,20 @@
 - (void)setDefaultIndicator:(NSString *)aDefaultIndicator
 {
 	defaultIndicator = aDefaultIndicator ;
+	
+	[self setNeedsDisplay] ;
+}
+
+- (void)setIndicatorColor:(UIColor *)aIndicatorColor
+{
+	indicatorColor = aIndicatorColor ;
+	
+	[self setNeedsDisplay] ;
+}
+
+- (void)setIndicatorSelectedColor:(UIColor *)aIndicatorSelectedColor
+{
+	indicatorSelectedColor = aIndicatorSelectedColor ;
 	
 	[self setNeedsDisplay] ;
 }

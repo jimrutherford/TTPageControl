@@ -26,7 +26,7 @@
 	[scrollView setPagingEnabled: YES] ;
 	[scrollView setContentSize: CGSizeMake(scrollView.bounds.size.width * numberOfPages, scrollView.bounds.size.height)] ;
 
-    NSArray *indicators = [[NSArray alloc] initWithObjects:@"search", [NSNull null], @"home", nil];
+    NSArray *indicators = [[NSArray alloc] initWithObjects:@"search", @"location", [NSNull null], @"home", nil];
     
 	// programmatically add the page control
 	pageControl = [[TTPageControl alloc] init] ;
@@ -38,54 +38,61 @@
 	[pageControl setIndicatorWidth: 12.0f] ;
     [pageControl setIndicatorHeight: 12.0f] ;
 	[pageControl setIndicatorSpace: 15.0f] ;
+    [pageControl setIndicatorSelectedColor:[UIColor yellowColor]];
+    [pageControl setIndicatorColor: [UIColor redColor]];
     [pageControl setIndicatorImages:indicators];
-    //[pageControl setDefaultIndicator:@"dot"];
+    [pageControl setDefaultIndicator:@"dot2"];
 	[self.view addSubview: pageControl] ;
 	
-	UILabel *pageLabel ;
+	UIImageView *page;
 	CGRect pageFrame ;
-	UIColor *color ;
-	char aLetter ;
+    NSString *pageName;
+    
 	for (int i = 0 ; i < numberOfPages ; i++)
 	{
-		// determine the frame of the current page
+		// figure out the frame of the page to be added
 		pageFrame = CGRectMake(i * scrollView.bounds.size.width, 0.0f, scrollView.bounds.size.width, scrollView.bounds.size.height) ;
 		
-		// create a page as a simple UILabel
-		pageLabel = [[UILabel alloc] initWithFrame: pageFrame] ;
-		
-		// add it to the scroll view
-		[scrollView addSubview: pageLabel] ;
-		
-		// determine and set its (random) background color
-		if (i%2 == 0)
-            color = [UIColor colorWithRed: 0.4f green: 0.4f blue: 0.4f alpha: 1.0f] ;
+        // get the name of the image we'll use to stub in a view
+        // start with some default backgrounds
+        if (i%2 == 0)
+            pageName = @"bg_1.png";
 		else
-            color = [UIColor colorWithRed: 0.5f green: 0.5f blue: 0.5f alpha: 1.0f] ;
-            
-        [pageLabel setBackgroundColor: color] ;
+            pageName = @"bg_2.png";
 		
-		// set some label properties
-		[pageLabel setFont: [UIFont boldSystemFontOfSize: 200.0f]] ;
-		[pageLabel setTextAlignment: NSTextAlignmentCenter] ;
-		[pageLabel setTextColor: [UIColor darkTextColor]] ;
+        // if our indicators array has items, lets see if there is a matching background image
+        if (indicators != nil)
+        {
+            if (i < [indicators count])
+            {
+                // lets see if we have a match and it's not null grab a reference to that background image name
+                if ([indicators objectAtIndex:i] != [NSNull null])
+                {
+                    pageName = [NSString stringWithFormat:@"%@_bg.png", [indicators objectAtIndex:i]];
+                }
+            }
+        }
+        
+        // set the image
+        page = [[UIImageView alloc] initWithImage:[UIImage imageNamed:pageName]];
+        
+        // set the frame
+		page.frame = pageFrame;
 		
-		// set the label's text as the letter corresponding to the current page index
-		aLetter = (char)((i+65)-(i/26)*26) ;	// the capitalized alphabet characters are in the range 65-90
-		[pageLabel setText: [NSString stringWithFormat: @"%c", aLetter]] ;
+        // add it to the scroll view
+		[scrollView addSubview: page] ;
 	}
-
 }
 
 #pragma mark -
-#pragma mark TTPageControl triggered actions
+#pragma mark DDPageControl event handlers
 
 - (void)pageControlClicked:(id)sender
 {
-	TTPageControl *thePageControl = (TTPageControl *)sender ;
+	TTPageControl *pc = (TTPageControl *)sender ;
 	
 	// we need to scroll to the new index
-	[scrollView setContentOffset: CGPointMake(scrollView.bounds.size.width * thePageControl.currentPage, scrollView.contentOffset.y) animated: YES] ;
+	[scrollView setContentOffset: CGPointMake(scrollView.bounds.size.width * pc.currentPage, scrollView.contentOffset.y) animated: YES] ;
 }
 
 

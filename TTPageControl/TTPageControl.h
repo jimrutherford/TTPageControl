@@ -32,6 +32,8 @@
 @property (nonatomic) CGFloat indicatorSpace;
 @property (nonatomic) NSArray *indicatorImages;
 @property (nonatomic) NSString *defaultIndicator;
+@property (nonatomic) UIColor *indicatorColor;
+@property (nonatomic) UIColor *indicatorSelectedColor;
 
 @end
 

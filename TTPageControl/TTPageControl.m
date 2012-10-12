@@ -257,7 +257,7 @@ NSMutableArray *imageSelectedViews;
 - (void)setDefaultIndicator:(NSString *)aDefaultIndicator
 {
 	defaultIndicator = aDefaultIndicator ;
-	
+	[self initImageViews];
 	[self setNeedsDisplay] ;
 }
 

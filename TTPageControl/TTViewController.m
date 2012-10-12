@@ -26,7 +26,7 @@
 	[scrollView setPagingEnabled: YES];
 	[scrollView setContentSize: CGSizeMake(scrollView.bounds.size.width * numberOfPages, scrollView.bounds.size.height)];
 
-    NSArray *indicators = [[NSArray alloc] initWithObjects:@"search", @"location", [NSNull null], @"home", nil];
+    NSArray *indicators = [[NSArray alloc] initWithObjects: @"search", @"location", [NSNull null], @"home", nil];
     
 	// programmatically add the page control
 	pageControl = [[TTPageControl alloc] init];
@@ -40,7 +40,7 @@
     [pageControl setIndicatorSelectedColor:[UIColor yellowColor]];
     [pageControl setIndicatorColor: [UIColor redColor]];
     [pageControl setIndicatorImages:indicators];
-    [pageControl setDefaultIndicator:@"dot2"];
+[pageControl setDefaultIndicator:@"dot2"];
 	[self.view addSubview: pageControl];
 	
 	UIImageView *page;
